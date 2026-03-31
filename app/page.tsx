@@ -1,65 +1,136 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useState, useEffect } from "react";
+
+const hiraganaMap: Record<string, string> = {
+  あ: "a", い: "i", う: "u", え: "e", お: "o",
+  か: "ka", き: "ki", く: "ku", け: "ke", こ: "ko",
+  さ: "sa", し: "shi", す: "su", せ: "se", そ: "so",
+  た: "ta", ち: "chi", つ: "tsu", て: "te", と: "to",
+  な: "na", に: "ni", ぬ: "nu", ね: "ne", の: "no",
+  は: "ha", ひ: "hi", ふ: "fu", へ: "he", ほ: "ho",
+  ま: "ma", み: "mi", む: "mu", め: "me", も: "mo",
+  や: "ya", ゆ: "yu", よ: "yo",
+  ら: "ra", り: "ri", る: "ru", れ: "re", ろ: "ro",
+  わ: "wa", を: "wo", ん: "n",
+};
+
+const hiraganaList = Object.entries(hiraganaMap);
+
+const getRandomItem = (arr: any[]) =>
+  arr[Math.floor(Math.random() * arr.length)];
+
+const shuffle = (array: any[]) => [...array].sort(() => Math.random() - 0.5);
+
+export default function HiraganaPractice() {
+  const [question, setQuestion] = useState<any>(null);
+  const [options, setOptions] = useState<string[]>([]);
+  const [mode, setMode] = useState<"hiragana" | "english">("hiragana");
+  const [score, setScore] = useState(0);
+  const [showPopup, setShowPopup] = useState(false);
+  const [correctAnswer, setCorrectAnswer] = useState("");
+
+  useEffect(() => {
+    generateQuestion();
+    console.log(localStorage.getItem("test"))
+  }, [mode]);
+
+  function generateQuestion() {
+    const random = getRandomItem(hiraganaList);
+    const correct = mode === "hiragana" ? random[1] : random[0];
+
+    let wrongOptions = shuffle(hiraganaList)
+      .filter((x) => x[0] !== random[0])
+      .slice(0, 3)
+      .map((x) => (mode === "hiragana" ? x[1] : x[0]));
+
+    const allOptions = shuffle([correct, ...wrongOptions]);
+
+    setQuestion(random);
+    setOptions(allOptions);
+  }
+
+  function handleAnswer(ans: string) {
+    const correct = mode === "hiragana" ? question[1] : question[0];
+
+    if (ans === correct) {
+      setScore((prev) => prev + 1);
+      generateQuestion();
+    } else {
+      setCorrectAnswer(correct);
+      setShowPopup(true);
+    }
+  }
+
+  if (!question) return null;
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div className="min-h-screen flex flex-col items-center justify-center bg-linear-to-br from-indigo-100 to-blue-200 p-4 text-black">
+      <h1 className="text-3xl font-bold mb-4">Hiragana Practice</h1>
+
+      <div className="mb-4">
+        <button
+          onClick={() => setMode("hiragana")}
+          className={`px-4 py-2 rounded-l ${
+            mode === "hiragana"
+              ? "bg-indigo-600 text-white"
+              : "bg-white border text-black"
+          }`}
+        >
+          Hiragana → English
+        </button>
+        <button
+          onClick={() => setMode("english")}
+          className={`px-4 py-2 rounded-r ${
+            mode === "english"
+              ? "bg-indigo-600 text-white"
+              : "bg-white border text-black"
+          }`}
+        >
+          English → Hiragana
+        </button>
+      </div>
+
+      <div className="text-7xl font-bold mb-6 text-indigo-900">
+        {mode === "hiragana" ? question[0] : question[1]}
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        {options.map((opt, i) => (
+          <button
+            key={i}
+            onClick={() => handleAnswer(opt)}
+            className="px-6 py-3 text-xl border rounded bg-white text-black hover:bg-indigo-600 hover:text-white transition"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            {opt}
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-6 text-lg font-semibold">Score: {score}</div>
+
+      {showPopup && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-xl text-center shadow-xl">
+            <h2 className="text-xl font-bold text-red-600 mb-2">
+              Wrong Answer ❌
+            </h2>
+            <p className="mb-2">Correct answer:</p>
+            <p className="text-3xl font-bold text-indigo-700 mb-4">
+              {correctAnswer}
+            </p>
+            <button
+              onClick={() => {
+                setShowPopup(false);
+                generateQuestion();
+              }}
+              className="px-6 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+            >
+              Continue
+            </button>
+          </div>
         </div>
-      </main>
+      )}
     </div>
   );
 }
