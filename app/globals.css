@@ -1,4 +1,6 @@
 @import "tailwindcss";
 
+@source inline("{bg,text,border}-{red,blue,green,yellow}-{100..900}");
+
 body { font-family: 'Noto Sans JP', sans-serif; }
 .glass-sidebar { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(10px); }

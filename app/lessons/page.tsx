@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from "next/navigation";
 import Navbar from '../components/Navbar';
 import LessonCard from '../components/LessonCard';
+import Lunenrolled from '../components/Lunenrolled';
 
 interface User {
     username: string,
@@ -13,15 +14,24 @@ interface User {
     id: number
 }
 
+type userLesson = {
+    id: number;
+    title: string;
+    description: string;
+    created_at: string;
+    icon: string;
+    color: string;
+    status: string;
+    progress: number;
+};
+
 type Lesson = {
-  id: number;
-  title: string;
-  description: string;
-  created_at: string;
-  icon: string;
-  color: string;
-  status: string;
-  progress: number;
+    id: number;
+    title: string;
+    description: string;
+    created_at: string;
+    icon: string;
+    color: string;
 };
 
 const page = () => {
@@ -29,7 +39,8 @@ const page = () => {
     const [open, setOpen] = useState(false);
     const [test, setTest] = useState(false);
     const [menu, setMenu] = useState(true);
-    const [userLessons, setUserLessons] = useState<Lesson[]>();
+    const [userLessons, setUserLessons] = useState<userLesson[]>();
+    const [allLessons, setAllLessons] = useState<Lesson[]>()
     const router = useRouter();
 
     const handleLogout = () => {
@@ -62,7 +73,7 @@ const page = () => {
         fetchUser();
     }, [user]);
 
-    useEffect(()=>{
+    useEffect(() => {
         const token = localStorage.getItem("jwt");
         if (!token) {
             handleLogout();
@@ -80,13 +91,39 @@ const page = () => {
             console.log(data);
             setUserLessons(data.data);
 
-            
+
         }
         fetchUserLessons();
-    },[]);
+    }, []);
 
-    
+    useEffect(() => {
+        const token = localStorage.getItem("jwt");
+        if (!token) {
+            handleLogout();
+        }
+        const fetchUserLessons = async () => {
+            const response = await fetch("http://localhost:3001/lesson/lessons", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                }
+            });
 
+            const data = await response.json();
+            const filtered : Lesson[] = data.data.filter((u:Lesson) => !userLessons?.find(s => s.id === u.id));
+            console.log(filtered);
+            setAllLessons(filtered);
+
+
+        }
+        fetchUserLessons();
+    }, [userLessons]);
+
+
+    const onc = () => {
+        console.log(allLessons);
+    }
 
     return (
         <div className="flex flex-col lg:flex-row min-h-screen">
@@ -136,9 +173,14 @@ const page = () => {
 
                 <main className="max-w-7xl mx-auto px-8 pb-24">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {userLessons?.map((item)=>(
+                        {userLessons?.map((item) => (
                             <LessonCard key={item.id} lesson={item} />
                         ))}
+                        {
+                            allLessons?.map((item)=>(
+                                <Lunenrolled key={item.id} lesson={item}/>
+                            ))
+                        }
                         <div className="group bg-white rounded-[2.5rem] p-8 border border-slate-200 hover:shadow-2xl hover:shadow-slate-200 transition-all cursor-pointer">
                             <div className="flex justify-between items-start mb-6">
                                 <div className="w-16 h-16 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center text-3xl">あ</div>
@@ -151,7 +193,7 @@ const page = () => {
                             </div>
                             <div className="flex justify-between text-xs font-bold text-slate-400">
                                 <span>46/46 Characters</span>
-                                <span>100%</span>
+                                <span onClick={onc}>100%</span>
                             </div>
                         </div>
 

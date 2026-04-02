@@ -1,23 +1,18 @@
 import React, { useEffect, useState } from 'react'
-import { Lesson } from './inter';
 
-// type Lesson = {
-//   id: number;
-//   title: string;
-//   description: string;
-//   created_at: string;
-//   icon: string;
-//   color: string;
-//   status: string;
-//   progress: number;
-// };
+type Lesson = {
+    id: number;
+    title: string;
+    description: string;
+    created_at: string;
+    icon: string;
+    color: string;
+};
 
-export interface LessonProgress {
+export interface WCount {
     status: boolean;
     lesson_id: string;   // string because your API returns "1"
-    total_words: number;
-    attempted_words: number;
-    progress: number;    // percentage (0–100)
+    total_words: number;    // percentage (0–100)
 }
 
 type Props = {
@@ -25,17 +20,22 @@ type Props = {
 };
 
 
+{/*
+###########################################################################
+lot to work    
+###########################################################################    
+*/}
 
-const LessonCard = ({ lesson }: Props) => {
-    const [uProg, setUProg] = useState<LessonProgress>();
+
+const Lunenrolled = ({ lesson }: Props) => {
+    const [wCount, setWCount] = useState<WCount>();
     const [modal, setModal] = useState(false);
-
 
     useEffect(() => {
         const token = localStorage.getItem("jwt");
 
         const fetchUProg = async () => {
-            const response = await fetch(`http://localhost:3001/lesson/${lesson.id}/progress`, {
+            const response = await fetch(`http://localhost:3001/lesson/${lesson.id}/word-count`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -45,7 +45,7 @@ const LessonCard = ({ lesson }: Props) => {
 
             const data = await response.json();
             console.log(data);
-            setUProg(data);
+            setWCount(data);
 
 
         }
@@ -58,21 +58,22 @@ const LessonCard = ({ lesson }: Props) => {
     const closeModal = () => {
         setModal(false);
     }
+
     return (
         <>
             <div className="group bg-white rounded-[2.5rem] p-8 border border-slate-200 hover:shadow-2xl hover:shadow-slate-200 transition-all cursor-pointer" onClick={openModal}>
                 <div className="flex justify-between items-start mb-6">
                     <div className={`w-16 h-16 bg-${lesson.color}-100 text-${lesson.color}-600 rounded-2xl flex items-center justify-center text-3xl`}>{lesson.icon}</div>
-                    <span className="text-xs font-black px-3 py-1 bg-green-100 text-green-700 rounded-full">{lesson.status.toUpperCase()}</span>
+                    <span className="text-xs font-black px-3 py-1 bg-green-100 text-green-700 rounded-full">None</span>
                 </div>
                 <h3 className="text-2xl font-bold mb-2">{lesson.title}</h3>
                 <p className="text-slate-500 text-sm mb-6 leading-relaxed">{lesson.description}</p>
                 <div className="w-full bg-slate-100 h-2 rounded-full mb-2">
-                    <div className={`bg-${lesson.color}-500 h-full w-[${uProg?.progress}%] rounded-full`}></div>
+                    <div className={`bg-${lesson.color}-500 h-full w-0 rounded-full`}></div>
                 </div>
                 <div className="flex justify-between text-xs font-bold text-slate-400">
-                    <span>{uProg?.attempted_words}/{uProg?.total_words} Words</span>
-                    <span>{uProg?.progress}%</span>
+                    <span>{wCount?.total_words} Words</span>
+                    <span>%</span>
                 </div>
             </div>
 
@@ -80,7 +81,7 @@ const LessonCard = ({ lesson }: Props) => {
                 <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={closeModal}></div>
 
                 <div className="relative bg-white w-full max-w-md rounded-[3rem] shadow-2xl overflow-hidden modal-animate">
-                    <div className={`h-24 bg-${lesson.color}-600 flex items-center justify-center relative`}>
+                    <div className="h-24 bg-indigo-600 flex items-center justify-center relative">
                         <div className="absolute -bottom-6 w-16 h-16 bg-white rounded-2xl shadow-lg flex items-center justify-center text-3xl" id="modal-icon">🍣</div>
                     </div>
 
@@ -101,8 +102,8 @@ const LessonCard = ({ lesson }: Props) => {
                         </div>
 
                         <div id="modal-actions">
-                            <button className={`w-full bg-${lesson.color}-600 text-white py-4 rounded-2xl font-black text-lg shadow-xl shadow-indigo-100 hover:bg-indigo-700 transition-all transform hover:-translate-y-1`}>
-                                Start Practice →
+                            <button className="w-full bg-slate-900 text-white py-4 rounded-2xl font-black text-lg shadow-xl shadow-slate-200 hover:bg-indigo-600 transition-all transform hover:-translate-y-1">
+                                Enroll in Course
                             </button>
                         </div>
 
@@ -114,7 +115,7 @@ const LessonCard = ({ lesson }: Props) => {
     )
 }
 
-export default LessonCard
+export default Lunenrolled
 function handleLogout() {
     throw new Error('Function not implemented.');
 }
