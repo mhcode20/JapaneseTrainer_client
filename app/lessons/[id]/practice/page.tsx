@@ -1,7 +1,8 @@
 "use client"
 import React, { useEffect, useState } from 'react'
 import { useRouter } from "next/navigation";
-import Navbar from '../../components/Navbar';
+import Navbar from '@/app/components/Navbar';
+import { useParams } from "next/navigation";
 
 
 
@@ -43,13 +44,15 @@ interface QuizQuestion {
 
 
 
-const page = () => {
+const page =  () => {
     const [q, setQ] = useState<QuizQuestion | null>(null);
     const [showPopup, setShowPopup] = useState(false);
     const [start, setStart] = useState(true);
     const [token, setToken] = useState("");
-    const [mcontent, setMcontent] = useState({ classes: "", content: "TEST" });
+    const [mcontent,setMcontent] =useState({classes:"",content:"TEST"});
     const router = useRouter();
+    const params = useParams();
+    const BASE_URL = process.env.NEXT_PUBLIC_API_BASE;
 
 
     useEffect(() => {
@@ -65,12 +68,13 @@ const page = () => {
 
     useEffect(() => {
         getNext();
+        console.log(params.id);
     }, [token])
 
 
     const getNext = async () => {
         try {
-            const response = await fetch("http://localhost:3001/progress/smart", {
+            const response = await fetch(`${BASE_URL}/lesson/${params.id}/mcq`, {
                 method: 'GET', // or 'POST', 'PUT', etc.
                 headers: {
                     'Authorization': `Bearer ${token}`, // Key part: adds the bearer token
@@ -99,10 +103,10 @@ const page = () => {
         let isCorrect = false;
         setShowPopup(true);
         if (ans === q?.correct) {
-            setMcontent({ classes: "w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center text-3xl border-4 border-white shadow-lg bg-green-500 text-white", content: "✨" })
+            setMcontent({classes:"w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center text-3xl border-4 border-white shadow-lg bg-green-500 text-white", content:"✨"})
             isCorrect = true;
         }
-        else setMcontent({ classes: "w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center text-3xl border-4 border-white shadow-lg bg-red-500 text-white", content: "❌" })
+        else setMcontent({classes:"w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center text-3xl border-4 border-white shadow-lg bg-red-500 text-white",content:"❌"})
         try {
             const response = await fetch("http://localhost:3001/progress/update", {
                 method: 'post', // or 'POST', 'PUT', etc.
@@ -130,6 +134,15 @@ const page = () => {
     const onContinue = () => {
         getNext();
     }
+
+    const onClickDash = () =>{
+        router.push("/dashboard");
+    }
+    
+    const onClickEnd = () =>{
+        router.push("/lessons");
+    }
+    
 
 
     return (
@@ -184,34 +197,6 @@ const page = () => {
                                 <button className="px-4 py-2 rounded-lg text-sm font-bold text-slate-500 hover:text-slate-700">English → Hiragana</button>
                             </div> */}
 
-                            <div className="max-w-md mx-auto mb-6">
-                                <div className="bg-white/60 backdrop-blur-md rounded-2xl p-3 border border-white shadow-sm flex items-center justify-between px-6">
-
-                                    <div className="flex gap-5">
-                                        <div className="flex flex-col">
-                                            <span className="text-[9px] font-black text-slate-400 uppercase tracking-tighter">Correct</span>
-                                            <span className="text-sm font-black text-green-600">14</span>
-                                        </div>
-                                        <div className="flex flex-col">
-                                            <span className="text-[9px] font-black text-slate-400 uppercase tracking-tighter">Wrong</span>
-                                            <span className="text-sm font-black text-red-500">2</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="h-6 w-[1px] bg-slate-200"></div>
-
-                                    <div className="flex items-center gap-2">
-                                        <div className="text-right">
-                                            <span className="text-[9px] font-black text-orange-400 uppercase tracking-tighter block">Streak</span>
-                                            <span className="text-sm font-black text-slate-700 leading-none">8 Words</span>
-                                        </div>
-                                        <span className="text-xl animate-bounce">🔥</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            
-
                             <div className="mb-12">
                                 <h2 className="text-7xl md:text-8xl font-bold text-slate-800 mb-4 tracking-tighter">{q?.question}</h2>
                                 <div className="flex justify-center gap-4 text-slate-400 text-sm italic">
@@ -243,9 +228,9 @@ const page = () => {
                             </div>
 
                             <div className="flex justify-between items-center border-t border-slate-100 pt-8">
-                                <button className="text-slate-400 font-bold hover:text-slate-600 px-4 py-2">Skip</button>
-                                <button className="bg-indigo-600 text-white px-10 py-4 rounded-2xl font-bold shadow-lg shadow-indigo-200 hover:bg-indigo-700 hover:-translate-y-1 transition-all active:translate-y-0">
-                                    Next Question →
+                                <button onClick={onClickDash} className="text-slate-400 font-bold hover:text-slate-600 px-4 py-2">Dashboard</button>
+                                <button onClick={onClickEnd} className="bg-indigo-600 text-white px-10 py-4 rounded-2xl font-bold shadow-lg shadow-indigo-200 hover:bg-indigo-700 hover:-translate-y-1 transition-all active:translate-y-0">
+                                    End →
                                 </button>
                             </div>
                         </div>
@@ -263,7 +248,7 @@ const page = () => {
                     <h3 id="status-title" className="text-2xl font-black mb-2">Result</h3>
                     <p id="status-desc" className="text-slate-500 mb-6">The correct answer was <span className="font-bold text-slate-800">Go</span>.</p>
 
-                    <button className="w-full py-4 bg-slate-900 text-white rounded-2xl font-black hover:bg-slate-800 transition shadow-lg" onClick={() => { setShowPopup(false); onContinue(); }}>
+                    <button className="w-full py-4 bg-slate-900 text-white rounded-2xl font-black hover:bg-slate-800 transition shadow-lg" onClick={() => {setShowPopup(false); onContinue();}}>
                         Continue →
                     </button>
                 </div>

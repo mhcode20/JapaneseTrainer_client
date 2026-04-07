@@ -21,6 +21,7 @@ type userLesson = {
     created_at: string;
     icon: string;
     color: string;
+    difficulty: string;
     status: string;
     progress: number;
 };
@@ -32,6 +33,7 @@ type Lesson = {
     created_at: string;
     icon: string;
     color: string;
+    difficulty: string;
 };
 
 const page = () => {
@@ -39,14 +41,23 @@ const page = () => {
     const [open, setOpen] = useState(false);
     const [test, setTest] = useState(false);
     const [menu, setMenu] = useState(true);
+    const [refresh, setRefresh] = useState(true);
     const [userLessons, setUserLessons] = useState<userLesson[]>();
     const [allLessons, setAllLessons] = useState<Lesson[]>()
     const router = useRouter();
+    const BASE_URL = process.env.NEXT_PUBLIC_API_BASE;
 
     const handleLogout = () => {
         localStorage.removeItem('jwt');
         router.push("/login");
     }
+
+    const handleRefresh = () => {
+        console.log(refresh);
+        setRefresh(refresh => !refresh);
+
+    }
+
 
     useEffect(() => {
         const token = localStorage.getItem("jwt");
@@ -54,7 +65,7 @@ const page = () => {
             handleLogout();
         }
         const fetchUser = async () => {
-            const response = await fetch("http://localhost:3001/auth/getUser", {
+            const response = await fetch(`${BASE_URL}/auth/getUser`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -63,12 +74,12 @@ const page = () => {
             });
 
             const data = await response.json();
-            console.log(data);
+            // console.log(data);
             user.username = data.user.username;
             user.email = data.user.email;
             user.id = data.user.id;
             setTest(true)
-            console.log(user);
+            // console.log(user);
         }
         fetchUser();
     }, [user]);
@@ -88,13 +99,14 @@ const page = () => {
             });
 
             const data = await response.json();
-            console.log(data);
+            // console.log(data);
             setUserLessons(data.data);
+            console.log(BASE_URL)
 
 
         }
         fetchUserLessons();
-    }, []);
+    }, [refresh]);
 
     useEffect(() => {
         const token = localStorage.getItem("jwt");
@@ -111,8 +123,8 @@ const page = () => {
             });
 
             const data = await response.json();
-            const filtered : Lesson[] = data.data.filter((u:Lesson) => !userLessons?.find(s => s.id === u.id));
-            console.log(filtered);
+            const filtered: Lesson[] = data.data.filter((u: Lesson) => !userLessons?.find(s => s.id === u.id));
+            // console.log(filtered);
             setAllLessons(filtered);
 
 
@@ -160,7 +172,7 @@ const page = () => {
             <main className="flex-grow p-6 lg:p-12 lg:pt-0 overflow-y-auto">
 
                 <header className="max-w-7xl mx-auto px-8 py-12">
-                    <h2 className="text-4xl font-black text-slate-900 mb-2">Lesson Catalog</h2>
+                    <h2 className="text-4xl font-black text-slate-900 mb-2">Lessons</h2>
                     <p className="text-slate-500">Choose a category to start practicing your vocabulary.</p>
 
                     <div className="flex gap-4 mt-8 overflow-x-auto pb-2">
@@ -177,8 +189,8 @@ const page = () => {
                             <LessonCard key={item.id} lesson={item} />
                         ))}
                         {
-                            allLessons?.map((item)=>(
-                                <Lunenrolled key={item.id} lesson={item}/>
+                            allLessons?.map((item) => (
+                                <Lunenrolled key={item.id} lesson={item} refresh={handleRefresh} />
                             ))
                         }
                         <div className="group bg-white rounded-[2.5rem] p-8 border border-slate-200 hover:shadow-2xl hover:shadow-slate-200 transition-all cursor-pointer">

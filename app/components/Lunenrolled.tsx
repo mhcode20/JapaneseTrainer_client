@@ -17,6 +17,7 @@ export interface WCount {
 
 type Props = {
     lesson: Lesson;
+    refresh: () => void;
 };
 
 
@@ -27,15 +28,17 @@ lot to work
 */}
 
 
-const Lunenrolled = ({ lesson }: Props) => {
+const Lunenrolled = ({ lesson, refresh }: Props) => {
     const [wCount, setWCount] = useState<WCount>();
     const [modal, setModal] = useState(false);
+    const BASE_URL = process.env.NEXT_PUBLIC_API_BASE;
+
 
     useEffect(() => {
         const token = localStorage.getItem("jwt");
 
         const fetchUProg = async () => {
-            const response = await fetch(`http://localhost:3001/lesson/${lesson.id}/word-count`, {
+            const response = await fetch(`${BASE_URL}/lesson/${lesson.id}/word-count`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -44,7 +47,7 @@ const Lunenrolled = ({ lesson }: Props) => {
             });
 
             const data = await response.json();
-            console.log(data);
+            // console.log(data);
             setWCount(data);
 
 
@@ -59,12 +62,35 @@ const Lunenrolled = ({ lesson }: Props) => {
         setModal(false);
     }
 
+    const enroll = () => {
+        const fetchEnroll = async () => {
+            const token = localStorage.getItem("jwt");
+            const response = await fetch(`${BASE_URL}/lesson/enroll`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body:JSON.stringify({
+                    lesson_id: lesson.id,
+                })
+            });
+            
+            const data = await response.json()
+
+
+        }
+        fetchEnroll();
+        setModal(false);
+        refresh();
+    }
+
     return (
         <>
-            <div className="group bg-white rounded-[2.5rem] p-8 border border-slate-200 hover:shadow-2xl hover:shadow-slate-200 transition-all cursor-pointer" onClick={openModal}>
+            <div className="group bg-white rounded-[2.5rem] p-8 border border-slate-200 hover:shadow-2xl hover:shadow-slate-200 transition-all cursor-pointer flex flex-col justify-between" onClick={openModal}>
                 <div className="flex justify-between items-start mb-6">
                     <div className={`w-16 h-16 bg-${lesson.color}-100 text-${lesson.color}-600 rounded-2xl flex items-center justify-center text-3xl`}>{lesson.icon}</div>
-                    <span className="text-xs font-black px-3 py-1 bg-green-100 text-green-700 rounded-full">None</span>
+                    <span className="text-xs font-black px-3 py-1 bg-slate-100 text-slate-700 rounded-full">Not Enrolled</span>
                 </div>
                 <h3 className="text-2xl font-bold mb-2">{lesson.title}</h3>
                 <p className="text-slate-500 text-sm mb-6 leading-relaxed">{lesson.description}</p>
@@ -73,7 +99,7 @@ const Lunenrolled = ({ lesson }: Props) => {
                 </div>
                 <div className="flex justify-between text-xs font-bold text-slate-400">
                     <span>{wCount?.total_words} Words</span>
-                    <span>%</span>
+                    <span>Enroll →</span>
                 </div>
             </div>
 
@@ -81,18 +107,18 @@ const Lunenrolled = ({ lesson }: Props) => {
                 <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={closeModal}></div>
 
                 <div className="relative bg-white w-full max-w-md rounded-[3rem] shadow-2xl overflow-hidden modal-animate">
-                    <div className="h-24 bg-indigo-600 flex items-center justify-center relative">
+                    <div className={`h-24 bg-${lesson.color}-600 flex items-center justify-center relative`}>
                         <div className="absolute -bottom-6 w-16 h-16 bg-white rounded-2xl shadow-lg flex items-center justify-center text-3xl" id="modal-icon">🍣</div>
                     </div>
 
                     <div className="p-10 pt-12 text-center">
-                        <h2 className="text-2xl font-black text-slate-900 mb-2" id="modal-title">Lesson Title</h2>
-                        <p className="text-slate-500 text-sm mb-8" id="modal-desc">Lesson description goes here.</p>
+                        <h2 className="text-2xl font-black text-slate-900 mb-2" id="modal-title">{lesson.title}</h2>
+                        <p className="text-slate-500 text-sm mb-8" id="modal-desc">{lesson.description}</p>
 
                         <div className="bg-slate-50 rounded-2xl p-4 mb-8 flex justify-around">
                             <div>
                                 <p className="text-[10px] font-black text-slate-400 uppercase">Vocabulary</p>
-                                <p className="font-bold text-slate-800" id="modal-count">0 Words</p>
+                                <p className="font-bold text-slate-800" id="modal-count">{wCount?.total_words} Words</p>
                             </div>
                             <div className="w-[1px] bg-slate-200"></div>
                             <div>
@@ -102,7 +128,7 @@ const Lunenrolled = ({ lesson }: Props) => {
                         </div>
 
                         <div id="modal-actions">
-                            <button className="w-full bg-slate-900 text-white py-4 rounded-2xl font-black text-lg shadow-xl shadow-slate-200 hover:bg-indigo-600 transition-all transform hover:-translate-y-1">
+                            <button onClick={enroll} className="w-full bg-slate-900 text-white py-4 rounded-2xl font-black text-lg shadow-xl shadow-slate-200 hover:bg-indigo-600 transition-all transform hover:-translate-y-1">
                                 Enroll in Course
                             </button>
                         </div>

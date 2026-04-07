@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Lesson } from './inter';
+import { useRouter } from 'next/navigation';
 
 // type Lesson = {
 //   id: number;
@@ -29,6 +30,7 @@ type Props = {
 const LessonCard = ({ lesson }: Props) => {
     const [uProg, setUProg] = useState<LessonProgress>();
     const [modal, setModal] = useState(false);
+    const router = useRouter();
 
 
     useEffect(() => {
@@ -58,9 +60,13 @@ const LessonCard = ({ lesson }: Props) => {
     const closeModal = () => {
         setModal(false);
     }
+
+    const onPractice = (num:number) => {
+        router.push(`/lessons/${num}/practice`);
+    }
     return (
         <>
-            <div className="group bg-white rounded-[2.5rem] p-8 border border-slate-200 hover:shadow-2xl hover:shadow-slate-200 transition-all cursor-pointer" onClick={openModal}>
+            <div className="group bg-white rounded-[2.5rem] p-8 border border-slate-200 hover:shadow-2xl hover:shadow-slate-200 transition-all cursor-pointer flex flex-col justify-between" onClick={openModal}>
                 <div className="flex justify-between items-start mb-6">
                     <div className={`w-16 h-16 bg-${lesson.color}-100 text-${lesson.color}-600 rounded-2xl flex items-center justify-center text-3xl`}>{lesson.icon}</div>
                     <span className="text-xs font-black px-3 py-1 bg-green-100 text-green-700 rounded-full">{lesson.status.toUpperCase()}</span>
@@ -81,17 +87,17 @@ const LessonCard = ({ lesson }: Props) => {
 
                 <div className="relative bg-white w-full max-w-md rounded-[3rem] shadow-2xl overflow-hidden modal-animate">
                     <div className={`h-24 bg-${lesson.color}-600 flex items-center justify-center relative`}>
-                        <div className="absolute -bottom-6 w-16 h-16 bg-white rounded-2xl shadow-lg flex items-center justify-center text-3xl" id="modal-icon">🍣</div>
+                        <div className="absolute -bottom-6 w-16 h-16 bg-white rounded-2xl shadow-lg flex items-center justify-center text-3xl" id="modal-icon">{lesson.icon}</div>
                     </div>
 
                     <div className="p-10 pt-12 text-center">
-                        <h2 className="text-2xl font-black text-slate-900 mb-2" id="modal-title">Lesson Title</h2>
-                        <p className="text-slate-500 text-sm mb-8" id="modal-desc">Lesson description goes here.</p>
+                        <h2 className="text-2xl font-black text-slate-900 mb-2" id="modal-title">{lesson.title}</h2>
+                        <p className="text-slate-500 text-sm mb-8" id="modal-desc">{lesson.description}</p>
 
                         <div className="bg-slate-50 rounded-2xl p-4 mb-8 flex justify-around">
                             <div>
                                 <p className="text-[10px] font-black text-slate-400 uppercase">Vocabulary</p>
-                                <p className="font-bold text-slate-800" id="modal-count">0 Words</p>
+                                <p className="font-bold text-slate-800" id="modal-count">{uProg?.total_words} Words</p>
                             </div>
                             <div className="w-[1px] bg-slate-200"></div>
                             <div>
@@ -101,7 +107,7 @@ const LessonCard = ({ lesson }: Props) => {
                         </div>
 
                         <div id="modal-actions">
-                            <button className={`w-full bg-${lesson.color}-600 text-white py-4 rounded-2xl font-black text-lg shadow-xl shadow-indigo-100 hover:bg-indigo-700 transition-all transform hover:-translate-y-1`}>
+                            <button onClick={()=>onPractice(lesson.id)} className={`w-full bg-${lesson.color}-600 text-white py-4 rounded-2xl font-black text-lg shadow-xl shadow-indigo-100 hover:bg-indigo-700 transition-all transform hover:-translate-y-1`}>
                                 Start Practice →
                             </button>
                         </div>
