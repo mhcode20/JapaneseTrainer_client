@@ -50,6 +50,7 @@ const page = () => {
     const [token, setToken] = useState("");
     const [mcontent, setMcontent] = useState({ classes: "", content: "TEST" });
     const router = useRouter();
+    const BASE_URL = process.env.NEXT_PUBLIC_API_BASE;
 
 
     useEffect(() => {
@@ -70,7 +71,7 @@ const page = () => {
 
     const getNext = async () => {
         try {
-            const response = await fetch("http://localhost:3001/progress/smart", {
+            const response = await fetch(`${BASE_URL}/progress/smart`, {
                 method: 'GET', // or 'POST', 'PUT', etc.
                 headers: {
                     'Authorization': `Bearer ${token}`, // Key part: adds the bearer token

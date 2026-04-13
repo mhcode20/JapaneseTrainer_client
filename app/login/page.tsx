@@ -11,6 +11,7 @@ import { div } from "framer-motion/client";
 export default function LoginPage() {
   const [data, setData] = useState({ username: "", password: "" });
   const router = useRouter();
+  const BASE_URL = process.env.NEXT_PUBLIC_API_BASE;
 
   const containerStyle = {
     backgroundImage: `url('https://www.transparenttextures.com/patterns/asfalt-light.png')`, // Path to image in your /public folder
@@ -67,7 +68,7 @@ export default function LoginPage() {
 
 
     try {
-      const res = await fetch("http://localhost:3001/auth/login", {
+      const res = await fetch(`${BASE_URL}/auth/login`, {
         method: "POST",
         headers: {
           // 'Content-Type': 'application/x-www-form-urlencoded',
@@ -169,7 +170,7 @@ export default function LoginPage() {
             </form>
 
             <p className="text-center mt-10 text-slate-500 font-medium">
-                New to the platform? <a href="#" className="text-indigo-600 font-black hover:underline">Create an account</a>
+                New to the platform? <a href="/signup" className="text-indigo-600 font-black hover:underline">Create an account</a>
             </p>
         </div>
     </div>

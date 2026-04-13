@@ -50,6 +50,7 @@ const page = () => {
     const [start, setStart] = useState(true);
     const [token, setToken] = useState("");
     const router = useRouter();
+    const BASE_URL = process.env.NEXT_PUBLIC_API_BASE;
 
     useEffect(() => {
         const token1 = localStorage.getItem("jwt");
@@ -69,7 +70,7 @@ const page = () => {
 
     const getNext = async () => {
         try {
-            const response = await fetch("http://localhost:3001/progress/smart", {
+            const response = await fetch(`${BASE_URL}/progress/smart`, {
                 method: 'GET', // or 'POST', 'PUT', etc.
                 headers: {
                     'Authorization': `Bearer ${token}`, // Key part: adds the bearer token
@@ -102,7 +103,7 @@ const page = () => {
         }
         else setShowWrong(true);
         try {
-            const response = await fetch("http://localhost:3001/progress/update", {
+            const response = await fetch(`${BASE_URL}/progress/update`, {
                 method: 'post', // or 'POST', 'PUT', etc.
                 headers: {
                     'Authorization': `Bearer ${token}`, // Key part: adds the bearer token

@@ -31,13 +31,15 @@ const LessonCard = ({ lesson }: Props) => {
     const [uProg, setUProg] = useState<LessonProgress>();
     const [modal, setModal] = useState(false);
     const router = useRouter();
+    const BASE_URL = process.env.NEXT_PUBLIC_API_BASE;
+
 
 
     useEffect(() => {
         const token = localStorage.getItem("jwt");
 
         const fetchUProg = async () => {
-            const response = await fetch(`http://localhost:3001/lesson/${lesson.id}/progress`, {
+            const response = await fetch(`${BASE_URL}/lesson/${lesson.id}/progress`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",

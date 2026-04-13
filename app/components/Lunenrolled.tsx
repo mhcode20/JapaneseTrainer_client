@@ -108,7 +108,7 @@ const Lunenrolled = ({ lesson, refresh }: Props) => {
 
                 <div className="relative bg-white w-full max-w-md rounded-[3rem] shadow-2xl overflow-hidden modal-animate">
                     <div className={`h-24 bg-${lesson.color}-600 flex items-center justify-center relative`}>
-                        <div className="absolute -bottom-6 w-16 h-16 bg-white rounded-2xl shadow-lg flex items-center justify-center text-3xl" id="modal-icon">🍣</div>
+                        <div className="absolute -bottom-6 w-16 h-16 bg-white rounded-2xl shadow-lg flex items-center justify-center text-3xl" id="modal-icon">{lesson.icon}</div>
                     </div>
 
                     <div className="p-10 pt-12 text-center">

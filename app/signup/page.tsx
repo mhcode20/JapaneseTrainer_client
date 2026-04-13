@@ -18,6 +18,7 @@ export default function RegisterPage() {
 
   const [data, setData] = useState<frm>({ username: "", email: "", password: "", c_pass: "" })
   const router = useRouter();
+  const BASE_URL = process.env.NEXT_PUBLIC_API_BASE;
 
   const onChangeHandle = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -59,7 +60,7 @@ export default function RegisterPage() {
 
 
     try {
-      const res = await fetch("http://localhost:3001/auth/register", {
+      const res = await fetch(`${BASE_URL}/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -113,7 +114,7 @@ export default function RegisterPage() {
             Create Account ✨
           </h1>
           <p className="text-indigo-700">
-            Start your Hiragana learning journey 🇯🇵
+            Start your Japanese learning journey 🇯🇵
           </p>
         </div>
 
@@ -121,14 +122,14 @@ export default function RegisterPage() {
         <form className="space-y-5" onSubmit={handleSubmit}>
           <div>
             <label className="block text-indigo-800 font-semibold mb-1">
-              Full Name
+              User Name
             </label>
             <input
               type="text"
               name="username"
               onChange={onChangeHandle}
               placeholder="Enter your full name"
-              className="w-full px-4 py-3 rounded-xl border border-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              className="w-full px-4 py-3 rounded-xl border border-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 lowercase"
             />
           </div>
 

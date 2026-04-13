@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 
 const hiraganaMap: Record<string, string> = {
@@ -29,8 +30,10 @@ export default function HiraganaPractice() {
   const [score, setScore] = useState(0);
   const [showPopup, setShowPopup] = useState(false);
   const [correctAnswer, setCorrectAnswer] = useState("");
+  const router = useRouter();
 
   useEffect(() => {
+    router.push("/login");
     generateQuestion();
     console.log(localStorage.getItem("test"))
   }, [mode]);

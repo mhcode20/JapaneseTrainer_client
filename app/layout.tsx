@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Noto_Sans_JP } from "next/font/google";
+import { Geist, Geist_Mono, Noto_Sans_JP, Noto_Sans_Bengali } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -16,6 +16,13 @@ const notoJs = Noto_Sans_JP({
   subsets: ['latin'],
   weight: ['400', '700', '900'],
   display: 'swap',
+  variable: '--font-noto-jp',
+});
+
+const notoBengali = Noto_Sans_Bengali({
+  subsets: ['bengali'],
+  weight: ['400', '700', '900'],
+  variable: '--font-noto-bengali', // For use in CSS
 });
 
 export const metadata: Metadata = {
@@ -29,10 +36,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${notoJs.variable}`}>
       
       <body
-        className={`${notoJs.className} bg-slate-50 text-slate-800 min-h-screen`}
+        className={`${notoBengali.className} bg-slate-50 text-slate-800 min-h-screen`}
       >
         
         {children}

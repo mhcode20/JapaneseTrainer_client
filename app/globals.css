@@ -1,6 +1,29 @@
 @import "tailwindcss";
 
-@source inline("{bg,text,border}-{red,pink,blue,green,yellow,orange,amber,lime,emerald,teal,cyan,sky,indigo,violet,purple,fuchsia,rose}-{100..900}");
+@source inline("{bg,text,border}-{red,pink,blue,green,yellow,orange,amber,lime,emerald,teal,cyan,sky,indigo,violet,purple,fuchsia,rose,neutral,zinc,gray,stone}-{100..900}");
+@source inline("w-[{0..100}%]");
+@source inline("text-xs text-sm text-base text-lg text-xl text-2xl text-3xl text-4xl text-5xl text-6xl text-7xl text-8xl text-9xl");
+@source inline("md:text-xl md:text-2xl md:text-3xl md:text-4xl md:text-5xl md:text-6xl md:text-7xl md:text-8xl");
+@source inline("{md:,}text-{xl,2xl,3xl,4xl,5xl,6xl,7xl,8xl}");
+
 
 body { font-family: 'Noto Sans JP', sans-serif; }
 .glass-sidebar { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(10px); }
+
+@layer components {
+  .zen-gradient {
+    background: radial-gradient(circle at top right, #fdfbff 0%, #f1f5f9 100%);
+  }
+
+  .kanji-bg {
+    font-family: var(--font-noto-jp), sans-serif;
+    font-size: 30rem;
+    line-height: 1;
+    pointer-events: none;
+    @apply select-none opacity-10; /* Added utility for better UX */
+  }
+
+  .bn-heavy {
+    font-weight: 900;
+  }
+}

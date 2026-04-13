@@ -4,6 +4,9 @@ import { AnimatePresence, motion } from "framer-motion";
 import Link from 'next/link';
 import { useRouter } from "next/navigation";
 import Navbar from '../components/Navbar';
+import Aside from '../components/Aside';
+import {Noto_Sans_JP, Noto_Sans_Bengali } from "next/font/google";
+
 
 interface User {
   username:string,
@@ -12,12 +15,21 @@ interface User {
   id:number
 }
 
+const notoJs = Noto_Sans_JP({ 
+  subsets: ['latin'],
+  weight: ['400', '700', '900'],
+  display: 'swap',
+  variable: '--font-noto-jp',
+});
+
 const page = () => {
     const [user,setUser] = useState<User>({username:"",email:"",img:"",id:0});
     const [open,setOpen] = useState(false);
     const [test,setTest] = useState(false);
     const [menu,setMenu] = useState(true);
     const router = useRouter();
+    const BASE_URL = process.env.NEXT_PUBLIC_API_BASE;
+
 
     const handleLogout = ()=>{
         localStorage.removeItem('jwt');
@@ -30,7 +42,7 @@ const page = () => {
             handleLogout();
         }
         const fetchUser = async ()=>{
-            const response = await fetch("http://localhost:3001/auth/getUser", {
+            const response = await fetch(`${BASE_URL}/auth/getUser`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -54,7 +66,7 @@ const page = () => {
     return (
     <div className="flex flex-col lg:flex-row min-h-screen">
         
-        <aside className="w-full lg:w-64 bg-white border-r border-slate-200 p-6 flex flex-col justify-between lg:h-screen">
+        {/* <aside className="w-full lg:w-64 bg-white border-r border-slate-200 p-6 flex flex-col justify-between lg:h-screen">
             <div>
                 <div className='flex justify-between'>
                 <h1 className={`text-xl font-black text-indigo-600 tracking-tighter lg:mb-10 ${menu?'☰':'mb-10'}`}>Japanese<span className="text-slate-400">Trainer</span></h1>
@@ -81,7 +93,8 @@ const page = () => {
                 <p className="font-bold mb-4 text-sm text-indigo-100">Pro Samurai</p>
                 <button className="w-full py-2 bg-white text-indigo-600 rounded-xl font-black text-xs hover:bg-indigo-50 transition">Manage</button>
             </div>
-        </aside>
+        </aside> */}
+        <Aside page={"dashboard"}/>
 
         <main className="flex-grow p-6 lg:p-12 overflow-y-auto">
             
@@ -108,7 +121,7 @@ const page = () => {
                 <div className="xl:col-span-2 space-y-8">
                     
                     <div className="bg-white rounded-[3rem] p-8 md:p-10 border border-slate-200 shadow-xl shadow-slate-200/50 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden">
-                        <div className="absolute -right-10 -bottom-10 text-[15rem] font-black opacity-[0.03] select-none pointer-events-none">学</div>
+                        <div className={`${notoJs.className} absolute -right-10 -bottom-10 text-[15rem] font-black opacity-[0.03] select-none pointer-events-none `}>学</div>
                         
                         <div className="w-32 h-32 bg-indigo-100 rounded-4xl flex items-center justify-center text-5xl shrink-0">🍣</div>
                         

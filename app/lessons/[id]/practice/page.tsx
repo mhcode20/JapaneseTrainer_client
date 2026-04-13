@@ -29,6 +29,7 @@ interface N5Word {
 interface QuizQuestion {
     id: number,
     question: string;
+    type: string;
     bangla: string;
     correct: string;
     romaji: string;
@@ -37,6 +38,14 @@ interface QuizQuestion {
     options: string[];
 }
 
+interface QuizStats {
+    attempts: number;
+    correct: number;
+    wrong: number;
+    streak: number;
+    last_result: "correct" | "wrong" | "none"; // Using a literal union for better type safety
+    updated_at: string;
+}
 
 
 
@@ -44,15 +53,18 @@ interface QuizQuestion {
 
 
 
-const page =  () => {
+const page = () => {
     const [q, setQ] = useState<QuizQuestion | null>(null);
+    const [qstat, setQstat] = useState<QuizStats>({ attempts: 0, correct: 0, wrong: 0, streak: 0, last_result: "none", updated_at: "" });
     const [showPopup, setShowPopup] = useState(false);
     const [start, setStart] = useState(true);
     const [token, setToken] = useState("");
-    const [mcontent,setMcontent] =useState({classes:"",content:"TEST"});
+    const [mcontent, setMcontent] = useState({ classes: "", content: "TEST" });
     const router = useRouter();
     const params = useParams();
     const BASE_URL = process.env.NEXT_PUBLIC_API_BASE;
+
+
 
 
     useEffect(() => {
@@ -68,7 +80,7 @@ const page =  () => {
 
     useEffect(() => {
         getNext();
-        console.log(params.id);
+        // console.log(params.id);
     }, [token])
 
 
@@ -87,9 +99,8 @@ const page =  () => {
             }
 
             const data = await response.json();
-            // console.log(data)
+            console.log(data)
             setQ(data);
-            console.log(data);
         } catch (err: any) {
             // setError(err.message);
         } finally {
@@ -97,18 +108,46 @@ const page =  () => {
         }
     }
 
+    useEffect(() => {
+        const getProgress = async () => {
+
+            try {
+                const response = await fetch(`${BASE_URL}/progress/${q?.id}`, {
+                    method: 'GET', // or 'POST', 'PUT', etc.
+                    headers: {
+                        'Authorization': `Bearer ${token}`, // Key part: adds the bearer token
+                        'Content-Type': 'application/json' // Add other headers as needed
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error("Failed to fetch data");
+                }
+
+                const data = await response.json();
+                console.log(data)
+                setQstat(data.stats);
+            } catch (err: any) {
+                // setError(err.message);
+            } finally {
+                // setLoading(false);
+            }
+        }
+        getProgress();
+    }, [q]);
+
     const handleAns = async (ans: string | undefined) => {
         // alert(q?.correct_answer)
         // setPop("flex");
         let isCorrect = false;
         setShowPopup(true);
         if (ans === q?.correct) {
-            setMcontent({classes:"w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center text-3xl border-4 border-white shadow-lg bg-green-500 text-white", content:"✨"})
+            setMcontent({ classes: "w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center text-3xl border-4 border-white shadow-lg bg-green-500 text-white", content: "✨" })
             isCorrect = true;
         }
-        else setMcontent({classes:"w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center text-3xl border-4 border-white shadow-lg bg-red-500 text-white",content:"❌"})
+        else setMcontent({ classes: "w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center text-3xl border-4 border-white shadow-lg bg-red-500 text-white", content: "❌" })
         try {
-            const response = await fetch("http://localhost:3001/progress/update", {
+            const response = await fetch(`${BASE_URL}/progress/update`, {
                 method: 'post', // or 'POST', 'PUT', etc.
                 headers: {
                     'Authorization': `Bearer ${token}`, // Key part: adds the bearer token
@@ -135,14 +174,32 @@ const page =  () => {
         getNext();
     }
 
-    const onClickDash = () =>{
+    const onClickDash = () => {
         router.push("/dashboard");
     }
-    
-    const onClickEnd = () =>{
+
+    const onClickEnd = () => {
         router.push("/lessons");
     }
-    
+
+    const formatQuestion = (text: string | null) => {
+        if (!text) return "";
+
+        // This regex splits the string but keeps the captured group (the content in parens)
+        const parts = text.split(/\((.*?)\)/);
+
+        return (
+            <>
+                {parts[0]}
+                {parts[1] && (
+                    <span className="text-blue-500 font-medium"> {/* Add your custom span styling here */}
+                        ({parts[1]})
+                    </span>
+                )}
+                {parts[2]}
+            </>
+        );
+    };
 
 
     return (
@@ -160,11 +217,15 @@ const page =  () => {
                 </div>
             </nav>
 
+
             <main className="max-w-4xl mx-auto mt-10 px-4">
 
-                <div className="w-full bg-slate-200 h-2 rounded-full mb-8 overflow-hidden">
+                {/* <div className=" bg-slate-200 h-2 rounded-full mb-8 overflow-hidden top-0 left-0 w-screen fixed z-50">
                     <div className="bg-indigo-500 h-full w-2/3 transition-all duration-500"></div>
-                </div>
+                </div> */}
+
+                <div className='fixed top-20 right-20 z-50'>hridoy</div>
+
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
 
@@ -192,38 +253,63 @@ const page =  () => {
                     <div className="md:col-span-2 order-1 md:order-2">
                         <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 p-8 md:p-12 border border-slate-100 text-center relative overflow-hidden">
 
-                            {/* <div className="inline-flex bg-slate-100 p-1 rounded-xl mb-10">
-                                <button className="px-4 py-2 rounded-lg text-sm font-bold bg-white shadow-sm text-indigo-600">Hiragana → English</button>
-                                <button className="px-4 py-2 rounded-lg text-sm font-bold text-slate-500 hover:text-slate-700">English → Hiragana</button>
-                            </div> */}
+                            <div className="max-w-md mx-auto mb-6">
+                                <div
+                                    className="bg-white/60 backdrop-blur-md rounded-2xl p-3 border border-white shadow-sm flex items-center justify-between px-6">
+
+                                    <div className="flex gap-5">
+                                        <div className="flex flex-col">
+                                            <span
+                                                className="text-[9px] font-black text-slate-400 uppercase tracking-tighter">Correct</span>
+                                            <span className="text-sm font-black text-green-600">{qstat.correct}</span>
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <span
+                                                className="text-[9px] font-black text-slate-400 uppercase tracking-tighter">Wrong</span>
+                                            <span className="text-sm font-black text-red-500">{qstat.wrong}</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="h-6 w-[1px] bg-slate-200"></div>
+
+                                    <div className="flex items-center gap-2">
+                                        <div className="text-right">
+                                            <span
+                                                className="text-[9px] font-black text-orange-400 uppercase tracking-tighter block">Streak</span>
+                                            <span className="text-sm font-black text-slate-700 leading-none">{qstat.streak} Times</span>
+                                        </div>
+                                        <span className="text-xl animate-bounce">🔥</span>
+                                    </div>
+                                </div>
+                            </div>
 
                             <div className="mb-12">
-                                <h2 className="text-7xl md:text-8xl font-bold text-slate-800 mb-4 tracking-tighter">{q?.question}</h2>
-                                <div className="flex justify-center gap-4 text-slate-400 text-sm italic">
+                                <h2 className={`text-${(q?.question?.length ?? 0) >= 5 ? "4" : "6"}xl md:text-${(q?.question?.length ?? 0) >= 5 ? "6" : "8"}xl font-bold text-slate-800 mb-4 tracking-tighter`}>{q?.question}</h2>
+                                {q?.type !== "bangla" && (<div className="flex justify-center gap-4 text-slate-400 text-sm italic">
                                     <span>{q?.romaji}</span>
                                     <span>•</span>
                                     <span>{q?.kanji}</span>
                                     <span>•</span>
                                     <span>{q?.uccharon}</span>
-                                </div>
+                                </div>)}
                             </div>
 
                             <div className="grid grid-cols-1xx sm_place grid-cols-2 gap-4 mb-10">
                                 <button className="group p-5 rounded-2xl border-2 border-slate-100 hover:border-indigo-500 hover:bg-indigo-50 transition-all text-left" onClick={() => handleAns(q?.options[0])}>
-                                    <span className="block text-xs font-bold text-slate-400 group-hover:text-indigo-400 mb-1 uppercase">Option A</span>
-                                    <span className="text-lg font-semibold">{q?.options[0]}</span>
+                                    {/* <span className="block text-xs font-bold text-slate-400 group-hover:text-indigo-400 mb-1 uppercase">Option A</span> */}
+                                    <span className="text-lg font-semibold">{q?.options?.[0] ?? "Loading..."}</span>
                                 </button>
                                 <button className="group p-5 rounded-2xl border-2 border-slate-100 hover:border-indigo-500 hover:bg-indigo-50 transition-all text-left" onClick={() => handleAns(q?.options[1])}>
-                                    <span className="block text-xs font-bold text-slate-400 group-hover:text-indigo-400 mb-1 uppercase">Option B</span>
-                                    <span className="text-lg font-semibold">{q?.options[1]}</span>
+                                    {/* <span className="block text-xs font-bold text-slate-400 group-hover:text-indigo-400 mb-1 uppercase">Option B</span> */}
+                                    <span className="text-lg font-semibold">{q?.options?.[1] ?? "Loading..."}</span>
                                 </button>
                                 <button className="group p-5 rounded-2xl border-2 border-slate-100 hover:border-indigo-500 hover:bg-indigo-50 transition-all text-left" onClick={() => handleAns(q?.options[2])}>
-                                    <span className="block text-xs font-bold text-slate-400 group-hover:text-indigo-400 mb-1 uppercase">Option C</span>
-                                    <span className="text-lg font-semibold">{q?.options[2]}</span>
+                                    {/* <span className="block text-xs font-bold text-slate-400 group-hover:text-indigo-400 mb-1 uppercase">Option C</span> */}
+                                    <span className="text-lg font-semibold">{q?.options?.[2] ?? "Loading..."}</span>
                                 </button>
                                 <button className="group p-5 rounded-2xl border-2 border-slate-100 hover:border-indigo-500 hover:bg-indigo-50 transition-all text-left" onClick={() => handleAns(q?.options[3])}>
-                                    <span className="block text-xs font-bold text-slate-400 group-hover:text-indigo-400 mb-1 uppercase">Option D</span>
-                                    <span className="text-lg font-semibold">{q?.options[3]}</span>
+                                    {/* <span className="block text-xs font-bold text-slate-400 group-hover:text-indigo-400 mb-1 uppercase">Option D</span> */}
+                                    <span className="text-lg font-semibold">{q?.options?.[3] ?? "Loading..."}</span>
                                 </button>
                             </div>
 
@@ -246,9 +332,9 @@ const page =  () => {
                     </div>
 
                     <h3 id="status-title" className="text-2xl font-black mb-2">Result</h3>
-                    <p id="status-desc" className="text-slate-500 mb-6">The correct answer was <span className="font-bold text-slate-800">Go</span>.</p>
+                    <p id="status-desc" className="text-slate-500 mb-6">The correct answer was <span className="font-bold text-slate-800">{q?.correct}</span>.</p>
 
-                    <button className="w-full py-4 bg-slate-900 text-white rounded-2xl font-black hover:bg-slate-800 transition shadow-lg" onClick={() => {setShowPopup(false); onContinue();}}>
+                    <button className="w-full py-4 bg-slate-900 text-white rounded-2xl font-black hover:bg-slate-800 transition shadow-lg" onClick={() => { setShowPopup(false); onContinue(); }}>
                         Continue →
                     </button>
                 </div>
