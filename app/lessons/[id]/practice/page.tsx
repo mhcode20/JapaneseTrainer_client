@@ -139,6 +139,8 @@ const page = () => {
     const handleAns = async (ans: string | undefined) => {
         // alert(q?.correct_answer)
         // setPop("flex");
+
+        
         let isCorrect = false;
         setShowPopup(true);
         if (ans === q?.correct) {
@@ -169,6 +171,8 @@ const page = () => {
             // setError(err.message);
         }
     }
+
+    
 
     const onContinue = () => {
         getNext();
@@ -201,10 +205,25 @@ const page = () => {
         );
     };
 
+    const text_w = (len: number | undefined): string => {
+        if (len) {
+            if (len < 25) return "max-md:text-lg";
+            else if (len < 30) {
+                return "max-md:text-base";
+            }
+            else if (len < 35) {
+                return "max-md:text-sm";
+            }
+            else {
+                return "max-md:text-xs";
+            }
+        }
+        return "max-md:text-lg";
+    }
 
     return (
         <>
-            <nav className="flex justify-between items-center px-8 py-4 bg-white border-b border-slate-200">
+            <nav className="md:flex justify-between items-center px-8 py-4 bg-white border-b border-slate-200 hidden">
                 <h1 className="text-xl font-bold text-indigo-600 tracking-tight">Japanese<span className="text-slate-400">Trainer</span></h1>
                 <div className="flex items-center gap-4">
                     <div className="text-right hidden sm:block">
@@ -218,14 +237,14 @@ const page = () => {
             </nav>
 
 
-            <main className="max-w-4xl mx-auto mt-10 px-4">
+            <main className="max-w-4xl mx-auto mt-4 md:mt-10 px-4">
 
                 {/* <div className=" bg-slate-200 h-2 rounded-full mb-8 overflow-hidden top-0 left-0 w-screen fixed z-50">
                     <div className="bg-indigo-500 h-full w-2/3 transition-all duration-500"></div>
                 </div> */}
 
-                <div className='fixed top-20 right-20 z-50'>hridoy</div>
-
+                {/* <div className='fixed top-20 right-20 z-50'>hridoy</div> */}
+                    
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
 
@@ -250,74 +269,77 @@ const page = () => {
                         </div>
                     </div>
 
-                    <div className="md:col-span-2 order-1 md:order-2">
-                        <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 p-8 md:p-12 border border-slate-100 text-center relative overflow-hidden">
+                    <div className="md:col-span-2 order-1 md:order-2 max-md:h-[calc(100vh-16px)]">
 
-                            <div className="max-w-md mx-auto mb-6">
-                                <div
-                                    className="bg-white/60 backdrop-blur-md rounded-2xl p-3 border border-white shadow-sm flex items-center justify-between px-6">
 
-                                    <div className="flex gap-5">
-                                        <div className="flex flex-col">
-                                            <span
-                                                className="text-[9px] font-black text-slate-400 uppercase tracking-tighter">Correct</span>
-                                            <span className="text-sm font-black text-green-600">{qstat.correct}</span>
+                        <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 p-8 md:p-12 border border-slate-100 text-center relative overflow-hidden max-md:h-full max-md:flex max-md:flex-col max-md:justify-between">
+                            <div className='flex flex-col gap-2'>
+                                <div className="w-full mx-auto mb-6">
+                                    <div className="bg-white/60 backdrop-blur-md w-full rounded-2xl p-3 border border-white shadow-sm flex items-center justify-between px-6">
+
+                                        <div className="flex gap-5">
+                                            <div className="flex flex-col">
+                                                <span
+                                                    className="text-[9px] font-black text-slate-400 uppercase tracking-tighter">Correct</span>
+                                                <span className="text-sm font-black text-green-600">{qstat.correct}</span>
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <span
+                                                    className="text-[9px] font-black text-slate-400 uppercase tracking-tighter">Wrong</span>
+                                                <span className="text-sm font-black text-red-500">{qstat.wrong}</span>
+                                            </div>
                                         </div>
-                                        <div className="flex flex-col">
-                                            <span
-                                                className="text-[9px] font-black text-slate-400 uppercase tracking-tighter">Wrong</span>
-                                            <span className="text-sm font-black text-red-500">{qstat.wrong}</span>
+
+                                        <div className="h-6 w-[1px] bg-slate-200"></div>
+
+                                        <div className="flex items-center gap-2">
+                                            <div className="text-right">
+                                                <span
+                                                    className="text-[9px] font-black text-orange-400 uppercase tracking-tighter block">Streak</span>
+                                                <span className="text-sm font-black text-slate-700 leading-none">{qstat.streak} Times</span>
+                                            </div>
+                                            <span className="text-xl animate-bounce">🔥</span>
                                         </div>
                                     </div>
+                                </div>
 
-                                    <div className="h-6 w-[1px] bg-slate-200"></div>
-
-                                    <div className="flex items-center gap-2">
-                                        <div className="text-right">
-                                            <span
-                                                className="text-[9px] font-black text-orange-400 uppercase tracking-tighter block">Streak</span>
-                                            <span className="text-sm font-black text-slate-700 leading-none">{qstat.streak} Times</span>
-                                        </div>
-                                        <span className="text-xl animate-bounce">🔥</span>
-                                    </div>
+                                <div className="mb-12">
+                                    <h2 className={`text-${(q?.question?.length ?? 0) >= 5 ? "4" : "6"}xl md:text-${(q?.question?.length ?? 0) >= 5 ? "6" : "8"}xl font-bold text-slate-800 mb-4 tracking-tighter`}>{q?.question}</h2>
+                                    {q?.type !== "bangla" && (<div className="flex justify-center gap-4 text-slate-400 text-sm italic">
+                                        <span>{q?.romaji}</span>
+                                        <span>•</span>
+                                        <span>{q?.kanji}</span>
+                                        <span>•</span>
+                                        <span>{q?.uccharon}</span>
+                                    </div>)}
                                 </div>
                             </div>
 
-                            <div className="mb-12">
-                                <h2 className={`text-${(q?.question?.length ?? 0) >= 5 ? "4" : "6"}xl md:text-${(q?.question?.length ?? 0) >= 5 ? "6" : "8"}xl font-bold text-slate-800 mb-4 tracking-tighter`}>{q?.question}</h2>
-                                {q?.type !== "bangla" && (<div className="flex justify-center gap-4 text-slate-400 text-sm italic">
-                                    <span>{q?.romaji}</span>
-                                    <span>•</span>
-                                    <span>{q?.kanji}</span>
-                                    <span>•</span>
-                                    <span>{q?.uccharon}</span>
-                                </div>)}
-                            </div>
-
-                            <div className="grid grid-cols-1xx sm_place grid-cols-2 gap-4 mb-10">
-                                <button className="group p-5 rounded-2xl border-2 border-slate-100 hover:border-indigo-500 hover:bg-indigo-50 transition-all text-left" onClick={() => handleAns(q?.options[0])}>
-                                    {/* <span className="block text-xs font-bold text-slate-400 group-hover:text-indigo-400 mb-1 uppercase">Option A</span> */}
-                                    <span className="text-lg font-semibold">{q?.options?.[0] ?? "Loading..."}</span>
-                                </button>
-                                <button className="group p-5 rounded-2xl border-2 border-slate-100 hover:border-indigo-500 hover:bg-indigo-50 transition-all text-left" onClick={() => handleAns(q?.options[1])}>
-                                    {/* <span className="block text-xs font-bold text-slate-400 group-hover:text-indigo-400 mb-1 uppercase">Option B</span> */}
-                                    <span className="text-lg font-semibold">{q?.options?.[1] ?? "Loading..."}</span>
-                                </button>
-                                <button className="group p-5 rounded-2xl border-2 border-slate-100 hover:border-indigo-500 hover:bg-indigo-50 transition-all text-left" onClick={() => handleAns(q?.options[2])}>
-                                    {/* <span className="block text-xs font-bold text-slate-400 group-hover:text-indigo-400 mb-1 uppercase">Option C</span> */}
-                                    <span className="text-lg font-semibold">{q?.options?.[2] ?? "Loading..."}</span>
-                                </button>
-                                <button className="group p-5 rounded-2xl border-2 border-slate-100 hover:border-indigo-500 hover:bg-indigo-50 transition-all text-left" onClick={() => handleAns(q?.options[3])}>
-                                    {/* <span className="block text-xs font-bold text-slate-400 group-hover:text-indigo-400 mb-1 uppercase">Option D</span> */}
-                                    <span className="text-lg font-semibold">{q?.options?.[3] ?? "Loading..."}</span>
-                                </button>
-                            </div>
-
-                            <div className="flex justify-between items-center border-t border-slate-100 pt-8">
-                                <button onClick={onClickDash} className="text-slate-400 font-bold hover:text-slate-600 px-4 py-2">Dashboard</button>
-                                <button onClick={onClickEnd} className="bg-indigo-600 text-white px-10 py-4 rounded-2xl font-bold shadow-lg shadow-indigo-200 hover:bg-indigo-700 hover:-translate-y-1 transition-all active:translate-y-0">
-                                    End →
-                                </button>
+                            <div className='flex flex-col gap-2'>
+                                <div className="grid grid-cols-1xx sm_place grid-cols-2 gap-4 mb-10">
+                                    <button className="group p-5 rounded-2xl border-2 border-slate-100 hover:border-indigo-500 hover:bg-indigo-50 transition-all text-left" onClick={() => handleAns(q?.options[0])}>
+                                        {/* <span className="block text-xs font-bold text-slate-400 group-hover:text-indigo-400 mb-1 uppercase">Option A</span> */}
+                                        <span className={`${text_w(q?.options?.[0].length)} md:text-lg font-semibold`}>{q?.options?.[0] ?? "Loading..."}</span>
+                                    </button>
+                                    <button className="group p-5 rounded-2xl border-2 border-slate-100 hover:border-indigo-500 hover:bg-indigo-50 transition-all text-left" onClick={() => handleAns(q?.options[1])}>
+                                        {/* <span className="block text-xs font-bold text-slate-400 group-hover:text-indigo-400 mb-1 uppercase">Option B</span> */}
+                                        <span className={`${text_w(q?.options?.[1].length)} md:text-lg font-semibold`}>{q?.options?.[1] ?? "Loading..."}</span>
+                                    </button>
+                                    <button className="group p-5 rounded-2xl border-2 border-slate-100 hover:border-indigo-500 hover:bg-indigo-50 transition-all text-left" onClick={() => handleAns(q?.options[2])}>
+                                        {/* <span className="block text-xs font-bold text-slate-400 group-hover:text-indigo-400 mb-1 uppercase">Option C</span> */}
+                                        <span className={`${text_w(q?.options?.[2].length)} md:text-lg font-semibold`}>{q?.options?.[2] ?? "Loading..."}</span>
+                                    </button>
+                                    <button className="group p-5 rounded-2xl border-2 border-slate-100 hover:border-indigo-500 hover:bg-indigo-50 transition-all text-left" onClick={() => handleAns(q?.options[3])}>
+                                        {/* <span className="block text-xs font-bold text-slate-400 group-hover:text-indigo-400 mb-1 uppercase">Option D</span> */}
+                                        <span className={`${text_w(q?.options?.[3].length)} md:text-lg font-semibold`}>{q?.options?.[3] ?? "Loading..."}</span>
+                                    </button>
+                                </div>
+                                <div className="flex justify-between items-center border-t border-slate-100 pt-8">
+                                    <button onClick={onClickDash} className="text-slate-400 font-bold hover:text-slate-600 px-4 py-2">Dashboard</button>
+                                    <button onClick={onClickEnd} className="bg-indigo-600 text-white px-10 py-4 rounded-2xl font-bold shadow-lg shadow-indigo-200 hover:bg-indigo-700 hover:-translate-y-1 transition-all active:translate-y-0">
+                                        End →
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>

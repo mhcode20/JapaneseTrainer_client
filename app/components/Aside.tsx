@@ -21,10 +21,10 @@ const Aside = ({page}:asideProps) => {
                     <div className='text-slate-500 font-black lg:hidden cursor-pointer' onClick={() => setMenu(!menu)}>{menu ? '☰' : '⚞'}</div>
                 </div>
                 <nav className={`space-y-2 lg:h-full ${menu ? 'h-0 overflow-hidden ' : ""}`}>
-                    <Link href="#" className={`flex items-center gap-3 px-4 py-3 ${page==="dashboard"?"bg-indigo-50 text-indigo-600":"text-slate-500 hover:bg-slate-50"}  rounded-2xl font-black shadow-sm`}>
+                    <Link href="/dashboard" className={`flex items-center gap-3 px-4 py-3 ${page==="dashboard"?"bg-indigo-50 text-indigo-600 shadow-sm":"text-slate-500 hover:bg-slate-50"}  rounded-2xl font-black `}>
                         <span>🏠</span> Dashboard
                     </Link>
-                    <Link href="/lessons" className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 rounded-2xl font-bold transition">
+                    <Link href="/lessons" className={`flex items-center gap-3 px-4 py-3 ${page==="lessons"?"bg-indigo-50 text-indigo-600 shadow-sm":"text-slate-500 hover:bg-slate-50"} rounded-2xl font-bold transition`}>
                         <span>📖</span> Lessons
                     </Link>
                     <a href="#" className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 rounded-2xl font-bold transition">

@@ -143,9 +143,9 @@ const page = () => {
 
             <Aside page={"lessons"}/>
 
-            <main className="flex-grow p-6 lg:p-12 lg:pt-0 overflow-y-auto">
+            <main className="flex-grow md:p-6 lg:p-12 lg:pt-0 overflow-y-auto">
 
-                <header className="max-w-7xl mx-auto px-8 py-12">
+                <header className="max-w-7xl mx-auto p-4 md:px-8 py-12">
                     <h2 className="text-4xl font-black text-slate-900 mb-2">Lessons</h2>
                     <p className="text-slate-500">Choose a category to start practicing your vocabulary.</p>
 
@@ -157,7 +157,7 @@ const page = () => {
                     </div>
                 </header>
 
-                <main className="max-w-7xl mx-auto px-8 pb-24">
+                <main className="max-w-7xl mx-auto px-6 md:px-8 pb-24">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                         {userLessons?.map((item) => (
                             <LessonCard key={item.id} lesson={item} />
