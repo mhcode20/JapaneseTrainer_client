@@ -187,8 +187,8 @@ const page = () => {
             setMcontent({ classes: "w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center text-3xl border-4 border-white shadow-lg bg-green-500 text-white", content: "✨" })
             isCorrect = true;
         }
-        // else setMcontent({ classes: "w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center text-3xl border-4 border-white shadow-lg bg-red-500 text-white", content: "❌" })
-        else setMcontent({ classes: "w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center text-xl border-4 border-white shadow-lg bg-red-500 text-white", content: "রোজ বলদ" })
+        else setMcontent({ classes: "w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center text-3xl border-4 border-white shadow-lg bg-red-500 text-white", content: "❌" })
+        // else setMcontent({ classes: "w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center text-xl border-4 border-white shadow-lg bg-red-500 text-white", content: "রোজ বলদ" })
         try {
             const response = await fetch(`${BASE_URL}/progress/update`, {
                 method: 'post', // or 'POST', 'PUT', etc.
