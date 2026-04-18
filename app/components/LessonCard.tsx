@@ -39,7 +39,7 @@ const LessonCard = ({ lesson }: Props) => {
         const token = localStorage.getItem("jwt");
 
         const fetchUProg = async () => {
-            const response = await fetch(`${BASE_URL}/lesson/${lesson.id}/progress`, {
+            const response = await fetch(`${BASE_URL}/lesson/${lesson.id}/prog`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
